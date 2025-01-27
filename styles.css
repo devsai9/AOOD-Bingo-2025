@@ -9,24 +9,41 @@
    grid-template-rows: 30vh 70vh;
 }
 
+.called-numbers {
+   height: 100%;
+   overflow: scroll;
+}
+
 .all-numbers {
    display: grid;
    grid-template-columns: repeat(15, minmax(0, 1fr));
 }
 
-.small-number {
-   text-align: center;
+.number {
    box-sizing: margin-box;
-   height: 6vw;
-   width: 6vw;
    margin: .2rem auto;
    border-radius: 50%;
    color: #fff;
    font-weight: bold;
    font-family: cursive;
-   font-size: 1.2rem;
    background-image: linear-gradient(green, lightgreen);
    display: inline-flex;
    justify-content: center;
    align-items: center;
+}
+
+.small-number {
+   height: 6vw;
+   width: 6vw;
+   font-size: 1.2rem;
+}
+
+.large-number {
+   height: 10rem;
+   width: 10rem;
+   font-size: 3rem;
+}
+
+.completed {
+   background-image: linear-gradient(red, darkred);
 }
