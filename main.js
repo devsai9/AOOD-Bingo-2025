@@ -16,7 +16,7 @@ numberPool.forEach((num, i) => {
    allNumbersElement.append(newElement);
 });
 
-createControlsWindow(300, 200);
+createControlsWindow(window, 300, 200);
 
 
 // game logic
@@ -51,21 +51,42 @@ function togglePause() {
 
 
 // helper functions
-function createControlsWindow(width, height) {
+function createControlsWindow(parentWindow, width, height) {
    let left = (screen.width / 2) - (width / 2);
    let top = (screen.height / 2) - (height / 2);
  
    const controlsWindow = window.open("", "", "width=" + width + ",height=" + height + ",left=" + left + ",top=" + top);
+   if (controlsWindow == null) {
+      alert("This site uses a pop-up window. Allow pop-ups and reload the page.")
+   }
  
    controlsWindow.document.write("<h1>Bingo Controls</h1>");
 
+   const changeSpeed = controlsWindow.document.createElement("div");
+   changeSpeed.innerHTML = `
+      <label for="speed">Choose speed in seconds between each number reveal</p>
+      <input type="text" value="2" name="speed" class="speed-input"><br>
+   `;
+   controlsWindow.document.body.append(changeSpeed);
+
    const startGameButton = controlsWindow.document.createElement("button");
    startGameButton.textContent = "Start the game";
-   startGameButton.onclick = startGame;
+   startGameButton.onclick = () => {
+      intervalSeconds = controlsWindow.document.querySelector(".speed-input");
+      startGame();
+   };
    controlsWindow.document.body.append(startGameButton);
 
    pauseButton = controlsWindow.document.createElement("button");
    pauseButton.textContent = "Pause";
    pauseButton.onclick = togglePause;
    controlsWindow.document.body.append(pauseButton);
+
+   const againButton = controlsWindow.document.createElement("button");
+   againButton.textContent = "Play again";
+   againButton.onclick = () => {
+      alert("Hi");
+      parentWindow.location.reload();
+   };
+   controlsWindow.document.body.append(againButton);
 }

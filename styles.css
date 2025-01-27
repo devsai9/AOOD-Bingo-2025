@@ -9,6 +9,11 @@
    grid-template-rows: 30vh 70vh;
 }
 
+.top {
+   display: grid;
+   grid-template-columns: auto 400px;
+}
+
 .called-numbers {
    height: 100%;
    overflow: scroll;
