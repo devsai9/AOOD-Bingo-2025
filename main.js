@@ -6,14 +6,7 @@ let paused = false;
 
 const allNumbersElement = document.querySelector(".all-numbers");
 const calledNumbersElement = document.querySelector(".called-numbers");
-
-// function mkBigNum(n) {
-//     const elem = document.createElement("span");
-//     elem.textContent = n.toString();
-//     elem.classList.add("big-number");
-//     return elem;
-// }
-
+let pauseButton;
 
 // init game
 numberPool.forEach((num, i) => {
@@ -23,15 +16,14 @@ numberPool.forEach((num, i) => {
    allNumbersElement.append(newElement);
 });
 
-startGame();
-
+createControlsWindow(300, 200);
 
 
 // game logic
 function tick() {
    const randomIndex = Math.floor(Math.random() * numberPool.length);
    const number = numberPool[randomIndex];
-   let spliced = numberPool.splice(randomIndex, 1);
+   numberPool.splice(randomIndex, 1);
    document.querySelector(`.small-${number}`).classList.add("completed");
    addCalledNumber(number);
 }
@@ -50,4 +42,30 @@ function addCalledNumber(number) {
    numberElement.classList.remove("small-number", `.small-${number}`, "completed");
    numberElement.classList.add("large-number", `.large-${number}`);
    calledNumbersElement.append(numberElement);
+}
+
+function togglePause() {
+   pauseButton.textContent = paused ? "Pause" : "Unpause";
+   paused = !paused;
+}
+
+
+// helper functions
+function createControlsWindow(width, height) {
+   let left = (screen.width / 2) - (width / 2);
+   let top = (screen.height / 2) - (height / 2);
+ 
+   const controlsWindow = window.open("", "", "width=" + width + ",height=" + height + ",left=" + left + ",top=" + top);
+ 
+   controlsWindow.document.write("<h1>Bingo Controls</h1>");
+
+   const startGameButton = controlsWindow.document.createElement("button");
+   startGameButton.textContent = "Start the game";
+   startGameButton.onclick = startGame;
+   controlsWindow.document.body.append(startGameButton);
+
+   pauseButton = controlsWindow.document.createElement("button");
+   pauseButton.textContent = "Pause";
+   pauseButton.onclick = togglePause;
+   controlsWindow.document.body.append(pauseButton);
 }

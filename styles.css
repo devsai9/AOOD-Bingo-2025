@@ -20,6 +20,7 @@
 }
 
 .number {
+   text-align: center;
    box-sizing: margin-box;
    margin: .2rem auto;
    border-radius: 50%;
