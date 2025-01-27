@@ -9,11 +9,19 @@ const calledNumbersElement = document.querySelector(".called-numbers");
 let pauseButton;
 
 // init game
+const palette = ["c-r", "c-w", "c-b"];
 numberPool.forEach((num, i) => {
-   let newElement = document.createElement("div");
-   newElement.classList.add("small-number", "number", `small-${num}`);
-   newElement.innerHTML = `<p>${bingo[Math.floor(i / 15)]} <br> ${num}</p>`;
-   allNumbersElement.append(newElement);
+    let newElement = document.createElement("div");
+    let index;
+    const x = i % 15;
+    const y = Math.floor(i / 15);
+    if ((x + y) % 2 === 0) {
+        index = x % 2 == 0 ? 0 : 2;
+    }
+    else index = 1;
+    newElement.classList.add("small-number", palette[index], "number", `small-${num}`);
+    newElement.innerHTML = `<p>${bingo[Math.floor(i / 15)]} <br> ${num}</p>`;
+    allNumbersElement.append(newElement);
 });
 
 createControlsWindow(window, 300, 200);
@@ -21,7 +29,10 @@ createControlsWindow(window, 300, 200);
 
 // game logic
 function tick() {
-   const randomIndex = Math.floor(Math.random() * numberPool.length);
+    const randomIndex = Math.floor(Math.random() * numberPool.length);
+    const n = numberPool[rand];
+    numberPool.splice(rand, 1);
+    calledNumbers.appendChild(mkBigNum(n));
    const number = numberPool[randomIndex];
    numberPool.splice(randomIndex, 1);
    document.querySelector(`.small-${number}`).classList.add("completed");
@@ -90,3 +101,6 @@ function createControlsWindow(parentWindow, width, height) {
    };
    controlsWindow.document.body.append(againButton);
 }
+
+
+setInterval(tick, 2000);
