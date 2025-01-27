@@ -1,0 +1,27 @@
+* {
+   padding: 0;
+   margin: 0;
+   font-size: 15px;
+}
+
+.game {
+   display: grid;
+   grid-template-rows: 30vh 70vh;
+}
+
+.all-numbers {
+   display: grid;
+   grid-template-columns: repeat(15, minmax(0, 1fr));
+}
+
+.small-number {
+   height: 2rem;
+   width: 2rem;
+   margin: .2rem auto;
+   border-radius: 50%;
+   color: #fff;
+   background-image: linear-gradient(red, blue);
+   display: inline-flex;
+   justify-content: center;
+   align-items: center;
+}
