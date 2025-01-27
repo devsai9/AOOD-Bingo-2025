@@ -72,7 +72,7 @@ function createControlsWindow(parentWindow, width, height) {
    const startGameButton = controlsWindow.document.createElement("button");
    startGameButton.textContent = "Start the game";
    startGameButton.onclick = () => {
-      intervalSeconds = controlsWindow.document.querySelector(".speed-input");
+      intervalSeconds = controlsWindow.document.querySelector(".speed-input").value;
       startGame();
    };
    controlsWindow.document.body.append(startGameButton);
