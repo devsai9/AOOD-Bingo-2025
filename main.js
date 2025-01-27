@@ -11,13 +11,13 @@ function mkBigNum(n) {
     return elem;
 }
 
-for (let i = 0; i < 75; i++) {
+numberPool.forEach((num, i) => {
    let newElement = document.createElement("div");
    newElement.classList.add("small-number");
-   newElement.innerHTML = `<p>${i + 1}</p>`;
+   newElement.innerHTML = `<p>${bingo[Math.floor(i / 15)]} <br> ${num}</p>`;
    allNumbers.append(newElement);
-}
+});
 
 function tick() {
-   
+   const rand = Math.floor(Math.random() * numberPool.length);
 }

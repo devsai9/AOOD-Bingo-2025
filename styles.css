@@ -15,12 +15,17 @@
 }
 
 .small-number {
-   height: 2rem;
-   width: 2rem;
+   text-align: center;
+   box-sizing: margin-box;
+   height: 6vw;
+   width: 6vw;
    margin: .2rem auto;
    border-radius: 50%;
    color: #fff;
-   background-image: linear-gradient(red, blue);
+   font-weight: bold;
+   font-family: cursive;
+   font-size: 1.2rem;
+   background-image: linear-gradient(green, lightgreen);
    display: inline-flex;
    justify-content: center;
    align-items: center;
