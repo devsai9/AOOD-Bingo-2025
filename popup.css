@@ -14,3 +14,106 @@
     src: url(https://fonts.gstatic.com/s/recursive/v38/8vJN7wMr0mhh-RQChyHEH06TlXhq_gukbYrFMk1QuAIcyEwG_X-dpEfaE5YaERmK-CImKsvxvU-MXGX2fSqasNfUvz2xbXfn1uEQadCCk317tQ0.woff2) format('woff2');
     unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
 }
+
+body {
+    padding: 2rem;
+}
+
+.control-panel {
+    margin: 2rem 0;
+}
+
+.action-btn {
+    padding: 0.5rem 1rem;
+    background-color: #e7e7e7;
+    border: none;
+    border-radius: 0.25rem;
+    cursor: pointer;
+    font-size: 1rem;
+    font-weight: 600;
+    transition: background-color 0.2s;
+    margin-right: 10px;
+    margin-top: 10px;
+}
+
+.action-btn:hover {
+    background-color: #d7d7d7;
+}
+
+.action-btn:disabled {
+    background-color: #efefef;
+    cursor: not-allowed;
+}
+
+input[type="number"] {
+    padding: 0.5rem 1rem;
+    border: 1px solid #a9a9a9;
+    border-radius: 0.25rem;
+    font-size: 1rem;
+    font-weight: 600;
+    margin-right: 10px;
+    margin-top: 10px;
+}
+
+input[type="number"]:disabled {
+    background-color: #efefef;
+    cursor: not-allowed;
+}
+
+/* Custom checkbox */
+.pattern-label input[type="checkbox"] {
+    display: none;
+}
+
+.pattern-label span {
+    --width: 0.75rem;
+    display: inline-block;
+    padding: var(--width) var(--width);
+    background-color: #e7e7e7;
+    border: 1px solid black;
+    cursor: pointer;
+}
+
+.pattern-label input[type="checkbox"]:checked + span {
+    background-color: #000000;
+}
+
+.pattern-label input[type="checkbox"]:disabled + span {
+    cursor: not-allowed;
+    filter: brightness(0.85);
+}
+
+@media (prefers-color-scheme: dark) {
+    * {
+        color: #f0f0f0;
+    }
+    
+    body {
+        background-color: #1a1a1a;
+        color: #f0f0f0;
+    }
+
+    .action-btn {
+        background-color: #2a2a2a;
+    }
+
+    .action-btn:hover {
+        background-color: #3a3a3a;
+    }
+
+    .action-btn:disabled {
+        background-color: #3a3a3a;
+        color: #a0a0a0;
+    }
+
+    input[type="number"] {
+        background-color: #2a2a2a;
+        color: #f0f0f0;
+        border-color: #3a3a3a;
+    }
+
+    input[type="number"]:disabled {
+        background-color: #3a3a3a;
+        color: #a0a0a0;
+    }
+}
