@@ -14,9 +14,9 @@ let pauseButton;
 
 
 function shuffle(arr) {
-    for (let i = arr.length - 1; i >= 0; i--) {
+    for (let i = arr.length; i > 0; i--) {
         let j = Math.floor(Math.random() * i);
-        arr[i, j] = arr[j, i];
+        [ arr[i], arr[j] ] = [ arr[j], arr[i] ];
     }
 }
 
@@ -76,7 +76,6 @@ function tick() {
     clsList.add("c-r");
     addCalledNumber(number);
     current++;
-    console.log(current);
 }
 
 function startGame() {
