@@ -78,6 +78,7 @@
     border-width: 3px;
     border-color: #1d1008;
     transition: scale 10s;
+    user-select: none;
 }
 
 .c-r {

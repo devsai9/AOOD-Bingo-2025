@@ -12,13 +12,13 @@ const calledNumbersElement = document.querySelector(".called-numbers");
 let controlsWindow = null;
 let pauseButton;
 
-const colorMask = [
-    1, 1, 1, 1, 0, 1, 0, 0, 0, 1, 0, 1, 1, 1, 1,
-    1, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0, 0, 0,
-    1, 0, 0, 0, 0, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1,
-    1, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 0, 1,
-    1, 1, 1, 1, 0, 1, 0, 0, 0, 1, 0, 1, 1, 1, 1,
-];
+
+function shuffle(arr) {
+    for (let i = arr.length - 1; i >= 0; i--) {
+        let j = Math.floor(Math.random() * i);
+        arr[i, j] = arr[j, i];
+    }
+}
 
 // Winning Pattern
 const patternDiv = document.querySelector('.pattern');
@@ -28,7 +28,7 @@ let winningPattern = [
     0, 0, 1, 0, 0,
     0, 0, 1, 1, 0,
     0, 0, 1, 0, 1,
-]
+];
 
 function displayPattern() {
     for (let i = 0; i < 25; i++) {
@@ -36,31 +36,47 @@ function displayPattern() {
     }
 }
 
-// init game
-numberPool.forEach((num, i) => {
-    let newElement = document.createElement("div");
-    newElement.classList.add(
-        "small-number",
-        "c-w",
-        "number",
-        `small-${num}`,
-    );
-    newElement.innerHTML = `<p>${bingo[Math.floor(i / 15)]} <br> ${num}</p>`;
-    allNumbersElement.append(newElement);
-});
+function reset() {
+    allNumbersElement.textContent = "";
+    calledNumbersElement.textContent = "";
+    init();
+}
 
-if (!dev) createControlsWindow(window, 600, 500);
+if (!dev) createControlsWindow(600, 500);
 if (dev) startGame();
+
+let current = 0;
+function init() {
+    // init game
+    for (let num = 1; num <= 75; num++) {
+        const i = num - 1;
+        let newElement = document.createElement("div");
+        newElement.classList.add(
+            "small-number",
+            "c-b",
+            "number",
+            `small-${num}`,
+        );
+        newElement.innerHTML = `<p>${bingo[Math.floor(i / 15)]} <br> ${num}</p>`;
+        allNumbersElement.append(newElement);
+    }
+    shuffle(numberPool);
+    current = 0;
+}
+
+init();
+
 
 // game logic
 function tick() {
-    const randomIndex = Math.floor(Math.random() * numberPool.length);
-    const number = numberPool[randomIndex];
-    numberPool.splice(randomIndex, 1);
+    if (current >= numberPool.length) return;
+    const number = numberPool[current];
     const clsList = document.querySelector(`.small-${number}`).classList;
-    clsList.remove("c-w");
-    clsList.add(colorMask[number - 1] ? "c-b" : "c-r");
+    clsList.remove("c-b");
+    clsList.add("c-r");
     addCalledNumber(number);
+    current++;
+    console.log(current);
 }
 
 function startGame() {
@@ -94,11 +110,11 @@ function addCalledNumber(number) {
     setTimeout(() => {
         numberElement.classList.add("show");
     }, 1000);
-    
+
     if (calledNumbersElement.children.length === 6) {
         calledNumbersElement.removeChild(calledNumbersElement.children[calledNumbersElement.children.length - 1]);
     }
-    
+
     smallNumberElement.classList.add("completed");
 }
 
@@ -108,7 +124,7 @@ function togglePause() {
 }
 
 // helper functions
-function createControlsWindow(parentWindow, width, height) {
+function createControlsWindow(width, height) {
     let left = (screen.width / 2) - (width / 2);
     let top = (screen.height / 2) - (height / 2);
 
@@ -116,7 +132,7 @@ function createControlsWindow(parentWindow, width, height) {
         "",
         "",
         "width=" + width + ",height=" + height + ",left=" + left + ",top=" +
-            top,
+        top,
     );
     if (controlsWindow == null) {
         alert(
@@ -230,7 +246,8 @@ function createControlsWindow(parentWindow, width, height) {
     againButton.classList.add("action-btn");
     againButton.textContent = "Play again";
     againButton.onclick = () => {
-        parentWindow.location.reload();
+        reset();
+        controlsWindow.close();
     };
     controlPanel.append(againButton);
 }
