@@ -86,7 +86,7 @@
 }
 
 .c-b {
-    background-color: #5656ff;
+    background-color: #5656ffaa;
 }
 
 .c-w {
@@ -116,8 +116,8 @@
 }
 
 .large-number {
-    height: 10rem;
-    width: 10rem;
+    height: 16vh;
+    width: 16vh;
     font-size: 3rem;
     margin-left: 0.5rem;
     transition: all .2s;
@@ -166,7 +166,7 @@
     }
 
     .c-b {
-        background-color: #5656ff;
+        background-color: hsl(240, 100%, 77%);
     }
 
     .game {

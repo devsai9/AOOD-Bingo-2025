@@ -83,11 +83,27 @@ input[type="number"]:disabled {
     filter: brightness(0.85);
 }
 
+.banner {
+    opacity: 0;
+    cursor: default;
+    transition: .2s;
+    margin-top: 0.3rem;
+    background-color: #00800040;
+    border: solid .2rem darkgreen;
+    border-radius: .6rem;
+    margin: .8rem 0;
+    padding: 1rem 1.5rem;
+}
+
+.banner.show {
+    opacity: 1;
+}
+
 @media (prefers-color-scheme: dark) {
     * {
         color: #f0f0f0;
     }
-    
+
     body {
         background-color: #1a1a1a;
         color: #f0f0f0;

@@ -1,5 +1,3 @@
-let dev = false;
-
 const numberPool = Array(75).fill(null).map((_, i) => i + 1);
 const calledNumbers = [];
 const bingo = "BINGO";
@@ -11,6 +9,8 @@ const calledNumbersElement = document.querySelector(".called-numbers");
 
 let controlsWindow = null;
 let pauseButton;
+
+let gameLoop;
 
 
 function shuffle(arr) {
@@ -41,15 +41,19 @@ function displayPattern() {
 function reset() {
     allNumbersElement.textContent = "";
     calledNumbersElement.textContent = "";
+    patternDiv.textContent = "";
     init();
 }
 
-if (!dev) createControlsWindow(600, 500);
-if (dev) startGame();
 
 let current = 0;
 function init() {
     // init game
+    clearInterval(gameLoop);
+    // if (controlsWindow && !controlsWindow.closed) {
+    //     controlsWindow.close();
+    // }
+
     for (let num = 1; num <= 75; num++) {
         const i = num - 1;
         let newElement = document.createElement("div");
@@ -67,7 +71,7 @@ function init() {
 }
 
 init();
-
+createControlsWindow(600, 550);
 
 // game logic
 function tick() {
@@ -82,7 +86,7 @@ function tick() {
 
 function startGame() {
     displayPattern();
-    let gameLoop = setInterval(() => {
+    gameLoop = setInterval(() => {
         if (!paused && numberPool.length > 0) {
             tick();
         }
@@ -95,7 +99,6 @@ function playSfx() {
 }
 
 function addCalledNumber(number) {
-    // if (!dev) playSfx();
     calledNumbers.push(number);
     const smallNumberElement = document.querySelector(`.small-${number}`);
     let numberElement = smallNumberElement.cloneNode(true);
@@ -107,7 +110,6 @@ function addCalledNumber(number) {
     );
     numberElement.classList.add("large-number", `.large-${number}`);
     calledNumbersElement.prepend(numberElement);
-    // numberElement.scrollIntoView({ behavior: "smooth" });
     setTimeout(() => {
         numberElement.classList.add("show");
     }, 1000);
@@ -146,8 +148,8 @@ function createControlsWindow(width, height) {
     controlPanel.classList.add("control-panel");
     controlsWindow.document.body.append(controlPanel);
 
-    const changeSpeed = controlsWindow.document.createElement("div");
-    changeSpeed.innerHTML = `
+    const cont = controlsWindow.document.createElement("div");
+    cont.innerHTML = `
         <!-- jank cover to prevent styling flash -->
         <style>
             .cover {
@@ -175,14 +177,19 @@ function createControlsWindow(width, height) {
             }
         </style>
         <div class="cover"></div>
-
         <p>Select the winning pattern</p>
         <div class="choose-pattern"></div>
         <br><br>
         <label for="speed" class="popup-test">Choose speed in seconds between each number reveal</p>
         <input type="number" value="2" name="speed" class="speed-input"><br>
+        <div class="buttons"></div>
+        <div class="banner">
+            <p>Game has been reset</p>
+        </div>
     `;
-    controlPanel.append(changeSpeed);
+    controlPanel.append(cont);
+
+    const buttons = controlsWindow.document.querySelector(".buttons");
 
     let speedInput = controlsWindow.document.querySelector(".speed-input");
 
@@ -235,22 +242,32 @@ function createControlsWindow(width, height) {
         winningPattern = getWinningPattern(selectPatternParent);
         startGame();
     };
-    controlPanel.append(startGameButton);
+    buttons.append(startGameButton);
 
     pauseButton = controlsWindow.document.createElement("button");
     pauseButton.classList.add("action-btn");
     pauseButton.textContent = "Pause";
     pauseButton.onclick = togglePause;
-    controlPanel.append(pauseButton);
+    buttons.append(pauseButton);
 
     const againButton = controlsWindow.document.createElement("button");
     againButton.classList.add("action-btn");
     againButton.textContent = "Play again";
     againButton.onclick = () => {
+        startGameButton.disabled = false;
+        speedInput.disabled = false;
+        if (paused) togglePause();
+        controlsWindow.document.querySelectorAll('.pattern-checkbox').forEach((input) => {
+            input.disabled = false;
+        });
+        let banner = controlPanel.querySelector(".banner");
+        banner.classList.add("show");
+        setTimeout(() => {
+            banner.classList.remove("show");
+        }, 2500);
         reset();
-        controlsWindow.close();
     };
-    controlPanel.append(againButton);
+    buttons.append(againButton);
 }
 
 function getWinningPattern(parent) {
