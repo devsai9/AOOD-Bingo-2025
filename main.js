@@ -23,7 +23,7 @@ function shuffle(arr) {
 }
 
 // Winning Pattern
-const patternDiv = document.querySelector('.pattern');
+const patternDiv = document.querySelector(".pattern");
 let winningPattern = [
     1, 0, 1, 0, 0,
     0, 1, 1, 0, 0,
@@ -34,7 +34,7 @@ let winningPattern = [
 
 function displayPattern() {
     for (let i = 0; i < 25; i++) {
-        patternDiv.innerHTML += `<div class="pattern-square ${winningPattern[i] ? 'square-b' : 'square-w'}"></div>`;
+        patternDiv.innerHTML += `<div class="pattern-square ${winningPattern[i] ? "square-b" : "square-w"}"></div>`;
     }
 }
 
@@ -86,11 +86,7 @@ function tick() {
 
 function startGame() {
     displayPattern();
-    gameLoop = setInterval(() => {
-        if (!paused && numberPool.length > 0) {
-            tick();
-        }
-    }, intervalSeconds * 1000);
+    resume();
 }
 
 function playSfx() {
@@ -121,9 +117,16 @@ function addCalledNumber(number) {
     smallNumberElement.classList.add("completed");
 }
 
+function resume() {
+    if (paused) return;
+    gameLoop = setInterval(tick, intervalSeconds * 1000);
+}
+
 function togglePause() {
     pauseButton.textContent = paused ? "Pause" : "Unpause";
     paused = !paused;
+    if (paused) clearInterval(gameLoop);
+    else resume();
 }
 
 // helper functions
@@ -180,8 +183,9 @@ function createControlsWindow(width, height) {
         <p>Select the winning pattern</p>
         <div class="choose-pattern"></div>
         <br><br>
-        <label for="speed" class="popup-test">Choose speed in seconds between each number reveal</p>
-        <input type="number" value="2" name="speed" class="speed-input"><br>
+        <label class="popup-test">Choose speed in seconds between each number reveal</p>
+        <input type="range" value="6" min="2" max="30" name="speed" class="speed-input">
+        <label for="speed" class="speed-label">6</label>
         <div class="buttons"></div>
         <div class="banner">
             <p>Game has been reset</p>
@@ -192,6 +196,12 @@ function createControlsWindow(width, height) {
     const buttons = controlsWindow.document.querySelector(".buttons");
 
     let speedInput = controlsWindow.document.querySelector(".speed-input");
+    let speedLabel = controlsWindow.document.querySelector(".speed-label");
+
+    speedInput.addEventListener("input", () => {
+        speedLabel.textContent = speedInput.value;
+        intervalSeconds = parseInt(speedInput.value);
+    });
 
     const cssLink = controlsWindow.document.createElement("link");
     cssLink.rel = "stylesheet";
@@ -204,16 +214,16 @@ function createControlsWindow(width, height) {
 
     controlsWindow.document.head.appendChild(cssLink);
 
-    const selectPatternParent = controlsWindow.document.querySelector('.choose-pattern');
+    const selectPatternParent = controlsWindow.document.querySelector(".choose-pattern");
     for (let i = 0; i < 25; i++) {
         let newLabel = controlsWindow.document.createElement("label");
-        newLabel.classList.add('pattern-label');
+        newLabel.classList.add("pattern-label");
         newLabel.id = `pattern-label-${i}`;
 
         let newCheckbox = controlsWindow.document.createElement("input");
-        newCheckbox.setAttribute('type', 'checkbox');
+        newCheckbox.setAttribute("type", "checkbox");
         newCheckbox.id = `pattern-checkbox-${i}`;
-        newCheckbox.classList.add('pattern-checkbox');
+        newCheckbox.classList.add("pattern-checkbox");
         newCheckbox.checked = winningPattern[i];
         if (i % 5 === 0) {
             selectPatternParent.append(controlsWindow.document.createElement("br"));
@@ -221,7 +231,7 @@ function createControlsWindow(width, height) {
         newLabel.appendChild(newCheckbox);
 
         let newSpan = controlsWindow.document.createElement("span");
-        newSpan.classList.add('pattern-square');
+        newSpan.classList.add("pattern-square");
         newSpan.id = `pattern-square-${i}`;
         newLabel.appendChild(newSpan);
 
@@ -234,11 +244,11 @@ function createControlsWindow(width, height) {
     startGameButton.onclick = () => {
         startGameButton.disabled = true;
         speedInput.disabled = true;
-        controlsWindow.document.querySelectorAll('.pattern-checkbox').forEach((input) => {
+        controlsWindow.document.querySelectorAll(".pattern-checkbox").forEach((input) => {
             input.disabled = true;
         });
 
-        intervalSeconds = speedInput.value;
+        intervalSeconds = parseInt(speedInput.value);
         winningPattern = getWinningPattern(selectPatternParent);
         startGame();
     };
@@ -247,7 +257,10 @@ function createControlsWindow(width, height) {
     pauseButton = controlsWindow.document.createElement("button");
     pauseButton.classList.add("action-btn");
     pauseButton.textContent = "Pause";
-    pauseButton.onclick = togglePause;
+    pauseButton.onclick = () => {
+        togglePause();
+        speedInput.disabled = !paused;
+    }
     buttons.append(pauseButton);
 
     const againButton = controlsWindow.document.createElement("button");
@@ -257,7 +270,7 @@ function createControlsWindow(width, height) {
         startGameButton.disabled = false;
         speedInput.disabled = false;
         if (paused) togglePause();
-        controlsWindow.document.querySelectorAll('.pattern-checkbox').forEach((input) => {
+        controlsWindow.document.querySelectorAll(".pattern-checkbox").forEach((input) => {
             input.disabled = false;
         });
         let banner = controlPanel.querySelector(".banner");
@@ -271,7 +284,7 @@ function createControlsWindow(width, height) {
 }
 
 function getWinningPattern(parent) {
-    const patternInputs = parent.querySelectorAll('.pattern-checkbox');
+    const patternInputs = parent.querySelectorAll(".pattern-checkbox");
     const pattern = [];
     patternInputs.forEach((input) => {
         pattern.push(input.checked ? 1 : 0);
