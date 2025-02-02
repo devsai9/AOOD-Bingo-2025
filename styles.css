@@ -25,32 +25,33 @@
     align-items: center;
     padding-left: auto;
     scroll-behavior: smooth;
+    padding-right: 10px;
 }
 
 .called-numbers div:nth-child(1) {
-    transform: scale(1.5);
+    transform: scale(1.6);
     margin: 3rem;
     /* create an animation to have it start larger and shrink to 1.5 */
-    animation: size-down 0.5s forwards;
+    /* animation: size-down 0.5s forwards; */
 
+}
+
+.called-numbers div:nth-child(2) {
+    transform: scale(1.3);
+    margin: 2rem;
+    transition: all 0.5s;
 }
 
 @keyframes size-down {
     from {
-        transform: scale(1.8);
+        transform: scale(1);
         opacity: 0;
     }
 
     to {
-        transform: scale(1.5);
+        transform: scale(2);
         opacity: 1;
     }
-}
-
-.called-numbers div:nth-child(2) {
-    transform: scale(1.25);
-    margin: 2rem;
-    transition: all 0.5s;
 }
 
 .all-numbers {
@@ -78,6 +79,7 @@
     border-width: 3px;
     border-color: #1d1008;
     transition: scale 10s;
+    -webkit-user-select: none;
     user-select: none;
 }
 
@@ -121,6 +123,10 @@
     font-size: 3rem;
     margin-left: 0.5rem;
     transition: all .2s;
+}
+
+.large-number .little-number {
+    font-size: 2.5rem;
 }
 
 .pattern {

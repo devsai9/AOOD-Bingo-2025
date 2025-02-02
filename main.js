@@ -22,7 +22,6 @@ function shuffle(arr) {
     }
 }
 
-// Winning Pattern
 const patternDiv = document.querySelector(".pattern");
 let winningPattern = [
     1, 0, 1, 0, 0,
@@ -48,12 +47,7 @@ function reset() {
 
 let current = 0;
 function init() {
-    // init game
     clearInterval(gameLoop);
-    // if (controlsWindow && !controlsWindow.closed) {
-    //     controlsWindow.close();
-    // }
-
     for (let num = 1; num <= 75; num++) {
         const i = num - 1;
         let newElement = document.createElement("div");
@@ -63,7 +57,7 @@ function init() {
             "number",
             `small-${num}`,
         );
-        newElement.innerHTML = `<p>${bingo[Math.floor(i / 15)]} <br> ${num}</p>`;
+        newElement.innerHTML = `<div><span>${bingo[Math.floor(i / 15)]}</span> <br> <span class="little-number">${num}</span></div>`;
         allNumbersElement.append(newElement);
     }
     shuffle(numberPool);
@@ -73,15 +67,38 @@ function init() {
 init();
 createControlsWindow(600, 550);
 
+let logged = [];
+
 // game logic
 function tick() {
-    if (current >= numberPool.length) return;
+    if (current >= numberPool.length) {
+        togglePause();
+        console.log("Game over");
+        checkGameWorkedCorrectly(logged, numberPool);
+        return;
+    }
     const number = numberPool[current];
     const clsList = document.querySelector(`.small-${number}`).classList;
     clsList.remove("c-b");
     clsList.add("c-r");
     addCalledNumber(number);
+    // logging
+    logged.push([bingo[Math.floor((number - 1) / 15)], number]);
+    console.log(bingo[Math.floor((number - 1) / 15)], number.toString().length === 1 ? "0" + number : "" + number);
     current++;
+}
+
+function checkGameWorkedCorrectly(logged, numberPool) {
+    let usedNumbers = [...numberPool];
+    for (let i = 0; i < logged.length; i++) {
+        if (usedNumbers.includes(logged[i][1]) != -1) usedNumbers.splice(usedNumbers.indexOf(logged[i][1]), 1);
+        else {
+            console.log("Game did not work correctly");
+            return;
+        }
+    }
+    if (usedNumbers.length === 0) console.log("Game worked correctly");
+    else console.log("Game did not work correctly");
 }
 
 function startGame() {
@@ -153,7 +170,6 @@ function createControlsWindow(width, height) {
 
     const cont = controlsWindow.document.createElement("div");
     cont.innerHTML = `
-        <!-- jank cover to prevent styling flash -->
         <style>
             .cover {
                 position: fixed;
@@ -183,9 +199,9 @@ function createControlsWindow(width, height) {
         <p>Select the winning pattern</p>
         <div class="choose-pattern"></div>
         <br><br>
-        <label class="popup-test">Choose speed in seconds between each number reveal</p>
-        <input type="range" value="6" min="2" max="30" name="speed" class="speed-input">
-        <label for="speed" class="speed-label">6</label>
+        <label for="speed" class="popup-test">Choose speed in seconds between each number reveal</p>
+        <input type="range" value="6" min=".1" max="30" step="0.1" name="speed" class="speed-input">
+        <input type="number" class="speed-label" value="6" min="0.1" max="30" step="0.1" />
         <div class="buttons"></div>
         <div class="banner">
             <p>Game has been reset</p>
@@ -199,7 +215,14 @@ function createControlsWindow(width, height) {
     let speedLabel = controlsWindow.document.querySelector(".speed-label");
 
     speedInput.addEventListener("input", () => {
-        speedLabel.textContent = speedInput.value;
+        speedLabel.value = speedInput.value;
+        intervalSeconds = parseInt(speedInput.value);
+    });
+
+    speedLabel.addEventListener("change", () => {
+        if (speedLabel.value < 0.1) speedLabel.value = 0.1;
+        if (speedLabel.value > 30) speedLabel.value = 30;
+        speedInput.value = speedLabel.value;
         intervalSeconds = parseInt(speedInput.value);
     });
 
@@ -244,6 +267,7 @@ function createControlsWindow(width, height) {
     startGameButton.onclick = () => {
         startGameButton.disabled = true;
         speedInput.disabled = true;
+        speedLabel.disabled = true;
         controlsWindow.document.querySelectorAll(".pattern-checkbox").forEach((input) => {
             input.disabled = true;
         });
@@ -260,6 +284,7 @@ function createControlsWindow(width, height) {
     pauseButton.onclick = () => {
         togglePause();
         speedInput.disabled = !paused;
+        speedLabel.disabled = !paused;
     }
     buttons.append(pauseButton);
 
@@ -269,6 +294,7 @@ function createControlsWindow(width, height) {
     againButton.onclick = () => {
         startGameButton.disabled = false;
         speedInput.disabled = false;
+        speedLabel.disabled = false;
         if (paused) togglePause();
         controlsWindow.document.querySelectorAll(".pattern-checkbox").forEach((input) => {
             input.disabled = false;
