@@ -122,7 +122,16 @@ function addCalledNumber(number) {
         "completed",
     );
     numberElement.classList.add("large-number", `.large-${number}`);
+
+    let siblings = calledNumbersElement.children;
+    for (let i = 0; i < siblings.length; i++) {
+        siblings[i].classList.remove("padding-jankiness");
+        void siblings[i].offsetWidth;
+        siblings[i].classList.add("padding-jankiness");
+    }
+
     calledNumbersElement.prepend(numberElement);
+
     setTimeout(() => {
         numberElement.classList.add("show");
     }, 1000);
@@ -170,31 +179,6 @@ function createControlsWindow(width, height) {
 
     const cont = controlsWindow.document.createElement("div");
     cont.innerHTML = `
-        <style>
-            .cover {
-                position: fixed;
-                top: 0;
-                left: 0;
-                width: 100%;
-                height: 100%;
-                pointer-events: none;
-                background-color: white;
-                z-index: 999;
-                transition: opacity .8s;
-                /* animation: fadeOut .8s forwards; */
-            }
-            @keyframes fadeOut {
-                0% {
-                    opacity: 1;
-                }
-                90% {
-                    opacity: 1;
-                }
-                100% {
-                    opacity: 0;
-                }
-            }
-        </style>
         <div class="cover"></div>
         <p>Select the winning pattern</p>
         <div class="choose-pattern"></div>
@@ -216,14 +200,14 @@ function createControlsWindow(width, height) {
 
     speedInput.addEventListener("input", () => {
         speedLabel.value = speedInput.value;
-        intervalSeconds = parseInt(speedInput.value);
+        intervalSeconds = parseFloat(speedInput.value);
     });
 
     speedLabel.addEventListener("change", () => {
         if (speedLabel.value < 0.1) speedLabel.value = 0.1;
         if (speedLabel.value > 30) speedLabel.value = 30;
         speedInput.value = speedLabel.value;
-        intervalSeconds = parseInt(speedInput.value);
+        intervalSeconds = parseFloat(speedInput.value);
     });
 
     const cssLink = controlsWindow.document.createElement("link");
@@ -272,7 +256,7 @@ function createControlsWindow(width, height) {
             input.disabled = true;
         });
 
-        intervalSeconds = parseInt(speedInput.value);
+        intervalSeconds = parseFloat(speedInput.value);
         winningPattern = getWinningPattern(selectPatternParent);
         startGame();
     };
