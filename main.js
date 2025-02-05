@@ -184,7 +184,7 @@ function createControlsWindow(width, height) {
         <div class="choose-pattern"></div>
         <br><br>
         <label for="speed" class="popup-test">Choose speed in seconds between each number reveal</p>
-        <input type="range" value="6" min=".1" max="30" step="0.1" name="speed" class="speed-input">
+        <input type="range" value="6" min="5" max="30" step="1" name="speed" class="speed-input">
         <input type="number" class="speed-label" value="6" min="0.1" max="30" step="0.1" />
         <div class="buttons"></div>
         <div class="banner">
@@ -200,14 +200,14 @@ function createControlsWindow(width, height) {
 
     speedInput.addEventListener("input", () => {
         speedLabel.value = speedInput.value;
-        intervalSeconds = parseFloat(speedInput.value);
+        intervalSeconds = parseFloat(speedLabel.value);
     });
 
     speedLabel.addEventListener("change", () => {
         if (speedLabel.value < 0.1) speedLabel.value = 0.1;
         if (speedLabel.value > 30) speedLabel.value = 30;
         speedInput.value = speedLabel.value;
-        intervalSeconds = parseFloat(speedInput.value);
+        intervalSeconds = parseFloat(speedLabel.value);
     });
 
     const cssLink = controlsWindow.document.createElement("link");
@@ -250,13 +250,13 @@ function createControlsWindow(width, height) {
     startGameButton.textContent = "Start the game";
     startGameButton.onclick = () => {
         startGameButton.disabled = true;
-        speedInput.disabled = true;
-        speedLabel.disabled = true;
+        // speedInput.disabled = true;
+        // speedLabel.disabled = true;
         controlsWindow.document.querySelectorAll(".pattern-checkbox").forEach((input) => {
             input.disabled = true;
         });
 
-        intervalSeconds = parseFloat(speedInput.value);
+        intervalSeconds = parseFloat(speedLabel.value);
         winningPattern = getWinningPattern(selectPatternParent);
         startGame();
     };
