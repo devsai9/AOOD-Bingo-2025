@@ -2,7 +2,7 @@ const numberPool = Array(75).fill(null).map((_, i) => i + 1);
 const calledNumbers = [];
 const bingo = "BINGO";
 let intervalSeconds = 2;
-let paused = false;
+let paused = true;
 
 const allNumbersElement = document.querySelector(".all-numbers");
 const calledNumbersElement = document.querySelector(".called-numbers");
@@ -71,20 +71,23 @@ let logged = [];
 
 // game logic
 function tick() {
+    if (paused) return;
     if (current >= numberPool.length) {
         togglePause();
-        console.log("Game over");
+        // console.log("Game over");
         checkGameWorkedCorrectly(logged, numberPool);
         return;
     }
+    // if (paused) return;
     const number = numberPool[current];
     const clsList = document.querySelector(`.small-${number}`).classList;
     clsList.remove("c-b");
     clsList.add("c-r");
     addCalledNumber(number);
+    playSfx();
     // logging
     logged.push([bingo[Math.floor((number - 1) / 15)], number]);
-    console.log(bingo[Math.floor((number - 1) / 15)], number.toString().length === 1 ? "0" + number : "" + number);
+    // console.log(bingo[Math.floor((number - 1) / 15)], number.toString().length === 1 ? "0" + number : "" + number);
     current++;
 }
 
@@ -93,12 +96,12 @@ function checkGameWorkedCorrectly(logged, numberPool) {
     for (let i = 0; i < logged.length; i++) {
         if (usedNumbers.includes(logged[i][1]) != -1) usedNumbers.splice(usedNumbers.indexOf(logged[i][1]), 1);
         else {
-            console.log("Game did not work correctly");
+            // console.log("Game did not work correctly");
             return;
         }
     }
-    if (usedNumbers.length === 0) console.log("Game worked correctly");
-    else console.log("Game did not work correctly");
+    // if (usedNumbers.length === 0) console.log("Game worked correctly");
+    // else console.log("Game did not work correctly");
 }
 
 function startGame() {
@@ -106,9 +109,18 @@ function startGame() {
     resume();
 }
 
+let soundReady = false;
+const soundNames = [
+    "ding",
+    "vine-boom",
+    "wilhelm"
+];
+let soundEffect = soundNames[0];
+
 function playSfx() {
-    const audio = new Audio("vine-boom.mp3");
-    audio.play();
+    const audio = new Audio(`./audio/${soundEffect}.mp3`);
+    audio.onloadeddata = () => audio.play();
+    audio.load();
 }
 
 function addCalledNumber(number) {
@@ -144,7 +156,6 @@ function addCalledNumber(number) {
 }
 
 function resume() {
-    if (paused) return;
     gameLoop = setInterval(tick, intervalSeconds * 1000);
 }
 
@@ -203,11 +214,21 @@ function createControlsWindow(width, height) {
         intervalSeconds = parseFloat(speedLabel.value);
     });
 
+    speedInput.addEventListener("change", () => {
+        if (paused) return;
+        clearInterval(gameLoop);
+        resume();
+    });
+
     speedLabel.addEventListener("change", () => {
         if (speedLabel.value < 0.1) speedLabel.value = 0.1;
         if (speedLabel.value > 30) speedLabel.value = 30;
         speedInput.value = speedLabel.value;
         intervalSeconds = parseFloat(speedLabel.value);
+
+        if (paused) return;
+        clearInterval(gameLoop);
+        resume();
     });
 
     const cssLink = controlsWindow.document.createElement("link");
@@ -252,6 +273,8 @@ function createControlsWindow(width, height) {
         startGameButton.disabled = true;
         // speedInput.disabled = true;
         // speedLabel.disabled = true;
+        pauseButton.disabled = false;
+        if (paused) togglePause();
         controlsWindow.document.querySelectorAll(".pattern-checkbox").forEach((input) => {
             input.disabled = true;
         });
@@ -264,11 +287,10 @@ function createControlsWindow(width, height) {
 
     pauseButton = controlsWindow.document.createElement("button");
     pauseButton.classList.add("action-btn");
-    pauseButton.textContent = "Pause";
+    pauseButton.textContent = "Unpause";
+    pauseButton.disabled = true;
     pauseButton.onclick = () => {
         togglePause();
-        speedInput.disabled = !paused;
-        speedLabel.disabled = !paused;
     }
     buttons.append(pauseButton);
 
@@ -279,7 +301,7 @@ function createControlsWindow(width, height) {
         startGameButton.disabled = false;
         speedInput.disabled = false;
         speedLabel.disabled = false;
-        if (paused) togglePause();
+        if (!paused) togglePause();
         controlsWindow.document.querySelectorAll(".pattern-checkbox").forEach((input) => {
             input.disabled = false;
         });
