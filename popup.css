@@ -22,10 +22,6 @@ body {
     padding: 2rem;
 }
 
-.control-panel {
-    margin: 2rem 0;
-}
-
 .action-btn {
     padding: 0.5rem 1rem;
     background-color: #e7e7e7;
@@ -86,6 +82,13 @@ input[type="number"]:disabled {
     filter: brightness(0.85);
 }
 
+.pattern-checkbox-container {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+}
+
 /* .speed-label {
     display: inline-block;
     background-color: #3e3e3e;
@@ -103,7 +106,7 @@ input[type="number"]:disabled {
 .banner {
     opacity: 0;
     cursor: default;
-    transition: 0.2s;
+    transition: opacity 0.2s;
     margin-top: 0.3rem;
     background-color: #00800040;
     border: solid 0.2rem darkgreen;
@@ -132,6 +135,30 @@ input[type="number"]:disabled {
 .pattern-select {
     margin-top: 10px;
 }
+
+.pattern-select:disabled {
+    cursor: not-allowed;
+    filter: brightness(0.85);
+}
+
+.plus-button {
+    padding: 0.5rem 1rem;
+    background-color: #e7e7e7;
+    color: black;
+    border: none;
+    border-radius: 0.25rem;
+    cursor: pointer;
+    font-size: 1rem;
+    font-weight: 600;
+    margin-left: 10px;
+    margin-top: 10px;
+}
+
+.plus-button:disabled {
+    background-color: #efefef;
+    cursor: not-allowed;
+}
+
 
 @keyframes fadeOut {
     0% {
@@ -181,5 +208,15 @@ input[type="number"]:disabled {
 
     .pattern-select {
         color-scheme: dark;
+    }
+
+    .plus-button {
+        background-color: #2a2a2a;
+        color: white;
+    }
+
+    .plus-button:disabled {
+        background-color: #3a3a3a;
+        color: #a0a0a0;
     }
 }

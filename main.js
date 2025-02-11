@@ -11,12 +11,15 @@ const calledNumbersElement = document.querySelector(".called-numbers");
 
 let game, popup;
 
+let updateWinningPatternsLoop;
+let updateProgressBarLoop;
+
 let soundReady = false;
 const soundNames = ["ding", "eagle", "vine-boom", "wilhelm"];
 let soundEffect = soundNames[1];
 
 const patternDiv = document.querySelector(".pattern");
-let winningPattern = [
+let winningPatterns = [
     [
         0, 0, 1, 0, 0,
         0, 0, 1, 0, 0,
@@ -121,9 +124,9 @@ class GameObject {
             this.#controlWindowButton = document.querySelector('.openPopupBtn');
             this.#controlWindowButton.addEventListener('click', () => {
                 popup.close();
-                popup.create(600, 500);
+                popup.create(650, 500);
                 popup.applyConfig({
-                    pattern: winningPattern[0],
+                    pattern: winningPatterns,
                     intervalSeconds: this.#intervalSeconds,
                     gameActive: this.#gameIsActive,
                     paused: this.#paused
@@ -141,6 +144,10 @@ class GameObject {
         patternDiv.textContent = "";
 
         clearInterval(this.#gameLoop);
+        clearInterval(updateWinningPatternsLoop);
+        clearInterval(updateProgressBarLoop);
+        setProgressBarEmpty();
+
         shuffle(numberPool);
         this.#current = 0;
         generateNumberElements();
@@ -150,7 +157,10 @@ class GameObject {
     startGame() {
         this.#gameIsActive = true;
         if (this.#paused) this.togglePause();
-        displayPattern();
+        clearInterval(updateWinningPatternsLoop);
+        clearInterval(updateProgressBarLoop);
+        startDisplayPatternLoop();
+        startUpdateProgressLoop(this.#intervalSeconds * 1000);
         this.reloadGameLoop();
     }
 
@@ -164,9 +174,11 @@ class GameObject {
             this.stop();
             this.#gameLoop = setInterval(obj.tick.bind(obj), obj.#intervalSeconds * 1000);
         }
+        startUpdateProgressLoop(this.#intervalSeconds * 1000);
     }
 
     stop() {
+        setProgressBarEmpty();
         clearInterval(this.#gameLoop);
     }
 
@@ -194,6 +206,7 @@ class GameObject {
         addCalledNumber(number);
         this.playSound();
         this.#current++;
+        startUpdateProgressLoop(this.#intervalSeconds * 1000);
     }
  
     togglePause() {
@@ -232,7 +245,9 @@ class ControlsWindow {
         checkBoxContainer: null,
         speedSlider: null,
         speedSliderLabel: null,
-        banner: null
+        banner: null,
+        presetDropdown: null,
+        plusButton: null
     }
 
     #buttons = {
@@ -268,11 +283,16 @@ class ControlsWindow {
     }
 
     applyConfig(config) {
-        const patternInputs = this.#innerElements.checkBoxContainer.querySelectorAll(".pattern-checkbox");
-        patternInputs.forEach((input) => {
-            input.checked = config.pattern[parseInt(input.id.split("-")[3])];
-            if (config.gameActive) input.disabled = true;
-        });
+        this.#innerElements.presetDropdown.disabled = config.gameActive;
+        this.#innerElements.plusButton.disabled = config.gameActive;
+
+        for (let i = 0; i < config.pattern.length; i++) {
+            for (let j = 0; j < 25; j++) {
+                const input = this.#window.document.getElementById(`pattern-checkbox-${i}-${j}`);
+                input.checked = config.pattern[i][j];
+                if (config.gameActive) input.disabled = true;
+            }
+        }
         
         this.#innerElements.speedSlider.value = config.intervalSeconds;
         this.#innerElements.speedSliderLabel.value = config.intervalSeconds;
@@ -297,13 +317,14 @@ class ControlsWindow {
     #addElements() {
         this.#addContainer();
         this.#addCSSWaitCover();
-        this.#addPatternSelection();
-        this.#addPatternCheckboxes(0);
-        this.#addLineBreak();
         this.#addLineBreak();
         this.#addSpeedControls();
         this.#addButtons();
         this.#addBanner();
+        this.#addPatternSelection();
+        for (let i = 0; i < winningPatterns.length; i++) {
+            this.#addPatternCheckboxes(i);
+        }
         this.#addCSS();
     }
 
@@ -333,7 +354,7 @@ class ControlsWindow {
         patternPreset.classList.add("pattern-select");
         patternPreset.setAttribute("theme", "dark");
         patternPreset.innerHTML = `
-        <option value="-1">Custom</option>
+        <option value="-1">Blank</option>
         <option value="0">Regular (5 in a line)</option>
         <option value="1">Four Corners</option>
         <option value="2">Blackout</option>
@@ -342,15 +363,18 @@ class ControlsWindow {
         <option value="5">Letter "I"</option>
         `;
         patternPreset.value = "0";
-        patternPreset.onchange = (e) => {
-            const index = parseInt(e.target.value);
-            if (index === -1) return;
-            winningPattern[0] = winningPatternPresets[index][0];
-            this.#innerElements.checkBoxContainer.querySelectorAll(".pattern-checkbox").forEach((input, i) => {
-                input.checked = winningPattern[0][i];
-            });
-        };
+        this.#innerElements.presetDropdown = patternPreset;
         this.#innerElements.container.append(patternPreset);
+
+        const plusButton = this.#window.document.createElement("button");
+        plusButton.textContent = "+";
+        plusButton.classList.add("plus-button");
+        plusButton.onclick = () => {
+            winningPatterns.push(parseInt(patternPreset.value) == -1 ? Array(25).fill(0) : winningPatternPresets[parseInt(patternPreset.value)][0]);
+            this.#addPatternCheckboxes(winningPatterns.length - 1);
+        }
+        this.#innerElements.container.append(plusButton);
+        this.#innerElements.plusButton = plusButton;
 
         const patternCheckboxContainer = this.#window.document.createElement("div");
         patternCheckboxContainer.classList.add("pattern-checkbox-container");
@@ -364,8 +388,14 @@ class ControlsWindow {
 
     #addPatternCheckboxes(frameNum) {
         if (!frameNum) frameNum = 0;
-        const selectPatternParent = this.#window.document.querySelector(`.patternCheckboxes-${frameNum}`);
-        this.#innerElements.checkBoxContainer = selectPatternParent;
+
+        let selectPatternParent = this.#window.document.querySelector(`.patternCheckboxes-${frameNum}`);
+        if (!selectPatternParent) {
+            selectPatternParent = document.createElement("div");
+            selectPatternParent.classList.add("patternCheckboxes", `patternCheckboxes-${frameNum}`);
+            this.#innerElements.checkBoxContainer.append(selectPatternParent);
+        }
+        
         for (let i = 0; i < 25; i++) {
             let newLabel = this.#window.document.createElement("label");
             newLabel.classList.add("pattern-label", `pattern-label-${frameNum}`);
@@ -375,7 +405,7 @@ class ControlsWindow {
             newCheckbox.setAttribute("type", "checkbox");
             newCheckbox.id = `pattern-checkbox-${frameNum}-${i}`;
             newCheckbox.classList.add("pattern-checkbox", `pattern-checkbox-${frameNum}`);
-            newCheckbox.checked = winningPattern[frameNum][i];
+            newCheckbox.checked = winningPatterns[frameNum][i];
             if (i % 5 === 0) {
                 selectPatternParent.append(this.#window.document.createElement("br"));
             }
@@ -461,6 +491,8 @@ class ControlsWindow {
             this.#buttons.start.disabled = true;
             this.#buttons.pause.disabled = false;
             this.#buttons.again.disabled = false;
+            this.#innerElements.presetDropdown.disabled = true;
+            this.#innerElements.plusButton.disabled = true;
 
             // gets ui stuff
             this.#window.document
@@ -471,7 +503,7 @@ class ControlsWindow {
 
             // GAME LOGIC
             game.setIntervalSeconds(parseFloat(this.#innerElements.speedSliderLabel.value));
-            winningPattern[0] = getWinningPattern(this.#innerElements.checkBoxContainer);
+            // winningPatterns[0] = popup.getWinningPatterns();
             game.startGame();
         };
 
@@ -505,6 +537,8 @@ class ControlsWindow {
             this.#buttons.again.disabled = true;
             this.#innerElements.speedSlider.disabled = false;
             this.#innerElements.speedSliderLabel.disabled = false;
+            this.#innerElements.presetDropdown.disabled = false;
+            this.#innerElements.plusButton.disabled = false;
 
             this.#window.document
                 .querySelectorAll(".pattern-checkbox")
@@ -522,12 +556,6 @@ class ControlsWindow {
 
         this.#buttons.container.append(againButton);
         this.#buttons.again = againButton;
-    }
-
-    #addProgressBar() {
-        const progressBar = this.#window.document.createElement("div");
-        progressBar.classList.add("progress-bar");
-        this.#innerElements.container.append(progressBar);
     }
 
     #addBanner() {
@@ -558,6 +586,21 @@ class ControlsWindow {
     getOpen() {
         return this.#config.open;
     }
+
+    getWinningPatterns() {
+        const frames = [];
+    
+        for (let i = 0; i < winningPatterns.length; i++) {
+            frames.push([]);
+            const checkboxes = this.#window.document.querySelectorAll(`.pattern-checkbox-${i}`);
+            checkboxes.forEach((checkbox) => {
+                frames[i].push(checkbox.checked ? 1 : 0);
+            });
+        }
+    
+        winningPatterns = frames;
+        return frames;
+    }
 }
 
 //=============================================
@@ -573,9 +616,46 @@ function shuffle(arr) {
     }
 }
 
-function displayPattern() {
+function startUpdateProgressLoop(intervalMs) {
+    setProgressBarEmpty();
+    let endTime = Date.now() + intervalMs;
+    updateWinningPatternsLoop = setInterval(() => {
+        let timeLeft = endTime - Date.now();
+        let percent = (timeLeft / intervalMs) * 100;
+        updateProgresBar(100 - Math.round(percent));
+    }, 50);
+}
+
+function setProgressBarEmpty() {
+    clearInterval(updateWinningPatternsLoop);
+    const progressBar = document.querySelector(".progress-bar-progress");
+    const progressLabel = document.querySelector(".progress-bar-label");
+    progressBar.style.width = "0%";
+    progressLabel.textContent = "0%";
+}
+
+function updateProgresBar(percent) {
+    const progressBar = document.querySelector(".progress-bar-progress");
+    const progressLabel = document.querySelector(".progress-bar-label");
+    progressBar.style.width = percent + "%";
+    progressLabel.textContent = percent + "%";
+}
+
+function startDisplayPatternLoop() {
+    let patternIndex = 0;
+    displayPattern(patternIndex);
+    updateProgressBarLoop = setInterval(() => {
+        patternIndex++
+        if (patternIndex >= winningPatterns.length) patternIndex = 0;
+        patternDiv.textContent = "";
+        displayPattern(patternIndex);
+    }, 3000);
+}
+
+function displayPattern(patternIndex) {
+    let winningPattern = popup.getWinningPatterns()[patternIndex];
     for (let i = 0; i < 25; i++) {
-        patternDiv.innerHTML += `<div class="pattern-square ${winningPattern[0][i] ? "square-b" : "square-w"}"></div>`;
+        patternDiv.innerHTML += `<div class="pattern-square ${winningPattern[i] ? "square-b" : "square-w"}"></div>`;
     }
 }
 
@@ -628,20 +708,11 @@ function addCalledNumber(number) {
     smallNumberElement.classList.add("completed");
 }
 
-function getWinningPattern(parent) {
-    const patternInputs = parent.querySelectorAll(".pattern-checkbox");
-    const pattern = [];
-    patternInputs.forEach((input) => {
-        pattern.push(input.checked ? 1 : 0);
-    });
-    return pattern;
-}
-
 
 //=============================================
 // All code should be run from here
 //=============================================
 
 game = new GameObject();
-popup = new ControlsWindow(600, 500);
+popup = new ControlsWindow(500, 550);
 game.init();
