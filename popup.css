@@ -129,6 +129,10 @@ input[type="number"]:disabled {
     /* animation: fadeOut .8s forwards; */
 }
 
+.pattern-select {
+    margin-top: 10px;
+}
+
 @keyframes fadeOut {
     0% {
         opacity: 1;
@@ -173,5 +177,9 @@ input[type="number"]:disabled {
     input[type="number"]:disabled {
         background-color: #3a3a3a;
         color: #a0a0a0;
+    }
+
+    .pattern-select {
+        color-scheme: dark;
     }
 }
