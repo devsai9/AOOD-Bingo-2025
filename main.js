@@ -16,7 +16,7 @@ let updateProgressBarLoop;
 
 let soundReady = false;
 const soundNames = ["ding", "eagle", "vine-boom", "wilhelm"];
-let soundEffect = soundNames[1];
+let soundEffect = soundNames[0];
 
 const patternDiv = document.querySelector(".pattern");
 let winningPatterns = [
@@ -707,7 +707,6 @@ function addCalledNumber(number) {
 
     smallNumberElement.classList.add("completed");
 }
-
 
 //=============================================
 // All code should be run from here
