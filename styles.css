@@ -50,6 +50,7 @@
 }
 
 .number {
+    position: relative;
     text-align: center;
     box-sizing: margin-box;
     margin: 0.2rem auto;
@@ -62,11 +63,23 @@
     font-size: 2rem;
     display: inline-flex;
     justify-content: center;
+    /* padding-top: .5em; */
     align-items: center;
     border: solid .2rem #1d1008;
     transition: scale 10s;
     -webkit-user-select: none;
     user-select: none;
+}
+
+.number .letter {
+    position: absolute;
+    top: 1.2rem;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
+.large-number .letter {
+    top: 2.8rem;
 }
 
 .number {
@@ -154,7 +167,7 @@
 } */
 
 .large-number .little-number {
-    font-size: 3.5rem;
+    font-size: 4.2rem;
 }
 
 .openPopupBtn {

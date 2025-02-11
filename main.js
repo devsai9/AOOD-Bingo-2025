@@ -16,13 +16,13 @@ const soundNames = ["ding", "vine-boom", "wilhelm"];
 let soundEffect = soundNames[0];
 
 const patternDiv = document.querySelector(".pattern");
-let winningPattern = [
+let winningPattern = [[
     1, 0, 1, 0, 0, 
     0, 1, 1, 0, 0, 
     0, 0, 1, 0, 0, 
     0, 0, 1, 1, 0, 
     0, 0, 1, 0, 1,
-];
+]];
 
 //=============================================
 // Classes
@@ -34,8 +34,24 @@ class GameObject {
     #intervalSeconds = 6;
     #paused = true;
     #gameIsActive = false;
+    #initOnce = false;
+    #controlWindowButton = null;
 
     init() {
+        if (!this.#initOnce) {
+            this.#controlWindowButton = document.querySelector('.openPopupBtn');
+            this.#controlWindowButton.addEventListener('click', () => {
+                popup.close();
+                popup.create(600, 500);
+                popup.applyConfig({
+                    pattern: winningPattern[0],
+                    intervalSeconds: this.#intervalSeconds,
+                    gameActive: this.#gameIsActive,
+                    paused: this.#paused
+                });
+            });
+        }
+
         allNumbersElement.textContent = "";
         calledNumbersElement.textContent = "";
         patternDiv.textContent = "";
@@ -45,7 +61,7 @@ class GameObject {
         this.#current = 0;
         generateNumberElements();
 
-        this.attachEventListenerToPopup(popup);
+        // this.attachEventListenerToPopup(popup);
     }
 
     attachEventListenerToPopup(popup) {
@@ -57,7 +73,7 @@ class GameObject {
                 if (popup.getOpen()) popup.close();
                 popup.create();
                 popup.applyConfig({
-                    pattern: winningPattern,
+                    pattern: winningPattern[0],
                     intervalSeconds: this.#intervalSeconds,
                     gameActive: this.#gameIsActive,
                     paused: this.#paused
@@ -192,7 +208,7 @@ class ControlsWindow {
     applyConfig(config) {
         const patternInputs = this.#innerElements.checkBoxContainer.querySelectorAll(".pattern-checkbox");
         patternInputs.forEach((input) => {
-            input.checked = config.pattern[parseInt(input.id.split("-")[2])];
+            input.checked = config.pattern[0][parseInt(input.id.split("-")[2])];
             if (config.gameActive) input.disabled = true;
         });
         
@@ -268,7 +284,7 @@ class ControlsWindow {
             newCheckbox.setAttribute("type", "checkbox");
             newCheckbox.id = `pattern-checkbox-${i}`;
             newCheckbox.classList.add("pattern-checkbox");
-            newCheckbox.checked = winningPattern[i];
+            newCheckbox.checked = winningPattern[0][i];
             if (i % 5 === 0) {
                 selectPatternParent.append(this.#window.document.createElement("br"));
             }
@@ -364,7 +380,7 @@ class ControlsWindow {
 
             // GAME LOGIC
             game.setIntervalSeconds(parseFloat(this.#innerElements.speedSliderLabel.value));
-            winningPattern = getWinningPattern(this.#innerElements.checkBoxContainer);
+            winningPattern[0] = getWinningPattern(this.#innerElements.checkBoxContainer);
             game.startGame();
         };
 
@@ -462,7 +478,7 @@ function shuffle(arr) {
 
 function displayPattern() {
     for (let i = 0; i < 25; i++) {
-        patternDiv.innerHTML += `<div class="pattern-square ${winningPattern[i] ? "square-b" : "square-w"}"></div>`;
+        patternDiv.innerHTML += `<div class="pattern-square ${winningPattern[0][i] ? "square-b" : "square-w"}"></div>`;
     }
 }
 
@@ -476,7 +492,7 @@ function generateNumberElements() {
             "number",
             `small-${num}`
         );
-        newElement.innerHTML = `<div><span>${
+        newElement.innerHTML = `<div><span class="letter">${
             bingo[Math.floor(i / 15)]
         }</span> <br> <span class="little-number">${num}</span></div>`;
         allNumbersElement.append(newElement);
