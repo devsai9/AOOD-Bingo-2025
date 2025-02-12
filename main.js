@@ -290,9 +290,15 @@ class ControlsWindow {
             for (let j = 0; j < 25; j++) {
                 const input = this.#window.document.getElementById(`pattern-checkbox-${i}-${j}`);
                 input.checked = config.pattern[i][j];
-                if (config.gameActive) input.disabled = true;
+                input.disabled = config.gameActive;
             }
         }
+
+        this.#window.document
+            .querySelectorAll(".delete-button")
+            .forEach((input) => {
+                input.disabled = config.gameActive;
+            });
         
         this.#innerElements.speedSlider.value = config.intervalSeconds;
         this.#innerElements.speedSliderLabel.value = config.intervalSeconds;
@@ -347,12 +353,11 @@ class ControlsWindow {
 
     #addPatternSelection() {
         const selectPattern = this.#window.document.createElement("p");
-        selectPattern.textContent = "Select the winning pattern";
+        selectPattern.textContent = "Create the winning pattern";
         this.#innerElements.container.append(selectPattern);
 
         const patternPreset = this.#window.document.createElement("select");
         patternPreset.classList.add("pattern-select");
-        patternPreset.setAttribute("theme", "dark");
         patternPreset.innerHTML = `
         <option value="-1">Blank</option>
         <option value="0">Regular (5 in a line)</option>
@@ -370,9 +375,19 @@ class ControlsWindow {
         plusButton.textContent = "+";
         plusButton.classList.add("plus-button");
         plusButton.onclick = () => {
-            winningPatterns.push(parseInt(patternPreset.value) == -1 ? Array(25).fill(0) : winningPatternPresets[parseInt(patternPreset.value)][0]);
-            this.#addPatternCheckboxes(winningPatterns.length - 1);
+            const val = parseInt(patternPreset.value);
+            if (val == -1) {
+                winningPatterns.push(Array(25).fill(0));
+                this.#addPatternCheckboxes(winningPatterns.length - 1);
+                return;
+            } else {
+                for (let i = 0; i < winningPatternPresets[val].length; i++) {
+                    winningPatterns.push(winningPatternPresets[val][i]);
+                    this.#addPatternCheckboxes(winningPatterns.length - 1);
+                }
+            }
         }
+        plusButton.setAttribute("title", "Add the selected pattern to the list");
         this.#innerElements.container.append(plusButton);
         this.#innerElements.plusButton = plusButton;
 
@@ -382,19 +397,38 @@ class ControlsWindow {
         this.#innerElements.checkBoxContainer = patternCheckboxContainer;
 
         const patternCheckbox = document.createElement("div");
-        patternCheckbox.classList.add("patternCheckboxes", "patternCheckboxes-0");
+        patternCheckbox.classList.add("pattern-checkboxes", "pattern-checkboxes-0");
         patternCheckboxContainer.append(patternCheckbox);
     }
 
     #addPatternCheckboxes(frameNum) {
         if (!frameNum) frameNum = 0;
 
-        let selectPatternParent = this.#window.document.querySelector(`.patternCheckboxes-${frameNum}`);
+        let selectPatternParent = this.#window.document.querySelector(`.pattern-checkboxes-${frameNum}`);
         if (!selectPatternParent) {
             selectPatternParent = document.createElement("div");
-            selectPatternParent.classList.add("patternCheckboxes", `patternCheckboxes-${frameNum}`);
+            selectPatternParent.classList.add("pattern-checkboxes", `pattern-checkboxes-${frameNum}`);
             this.#innerElements.checkBoxContainer.append(selectPatternParent);
         }
+
+        const deleteButton = this.#window.document.createElement("button");
+        deleteButton.innerHTML = "&times;";
+        deleteButton.classList.add("delete-button");
+        deleteButton.onclick = () => {
+            winningPatterns.splice(frameNum, 1);
+
+            if (frameNum === this.#innerElements.checkBoxContainer.children.length - 1) {
+                selectPatternParent.remove();
+                return;
+            }
+
+            this.#window.document.querySelectorAll('.pattern-checkboxes').forEach((el) => el.remove());
+            
+            for (let i = 0; i < winningPatterns.length; i++) {
+                this.#addPatternCheckboxes(i);
+            }
+        };
+        selectPatternParent.append(deleteButton);
         
         for (let i = 0; i < 25; i++) {
             let newLabel = this.#window.document.createElement("label");
@@ -501,6 +535,12 @@ class ControlsWindow {
                     input.disabled = true;
                 });
 
+            this.#window.document
+                .querySelectorAll(".delete-button")
+                .forEach((input) => {
+                    input.disabled = true;
+                });
+
             // GAME LOGIC
             game.setIntervalSeconds(parseFloat(this.#innerElements.speedSliderLabel.value));
             // winningPatterns[0] = popup.getWinningPatterns();
@@ -542,6 +582,12 @@ class ControlsWindow {
 
             this.#window.document
                 .querySelectorAll(".pattern-checkbox")
+                .forEach((input) => {
+                    input.disabled = false;
+                });
+
+            this.#window.document
+                .querySelectorAll(".delete-button")
                 .forEach((input) => {
                     input.disabled = false;
                 });
