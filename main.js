@@ -10,6 +10,7 @@ const allNumbersElement = document.querySelector(".all-numbers");
 const calledNumbersElement = document.querySelector(".called-numbers");
 
 let game, popup;
+let soundEnabled = false;
 
 let updateWinningPatternsLoop;
 let updateProgressBarLoop;
@@ -221,9 +222,11 @@ class GameObject {
     }
 
     playSound() {
-        const audio = new Audio(`./audio/${soundEffect}.mp3`);
-        audio.onloadeddata = () => audio.play();
-        audio.load();
+        if (soundEnabled) {
+            const audio = new Audio(`./audio/${soundEffect}.mp3`);
+            audio.onloadeddata = () => audio.play();
+            audio.load();
+        }
     }
 }
 
@@ -245,6 +248,7 @@ class ControlsWindow {
         checkBoxContainer: null,
         speedSlider: null,
         speedSliderLabel: null,
+        sfxCheckbox: null,
         banner: null,
         presetDropdown: null,
         plusButton: null
@@ -326,6 +330,7 @@ class ControlsWindow {
         this.#addLineBreak();
         this.#addSpeedControls();
         this.#addButtons();
+        this.#addSoundEffectToggle();
         this.#addBanner();
         this.#addPatternSelection();
         for (let i = 0; i < winningPatterns.length; i++) {
@@ -349,6 +354,35 @@ class ControlsWindow {
         this.#innerElements.cssCover = this.#window.document.createElement("div");
         this.#innerElements.cssCover.classList.add("cover");
         this.#innerElements.container.append(this.#innerElements.cssCover);
+    }
+
+    #addSoundEffectToggle() {
+        this.#addLineBreak();
+
+        const div = document.createElement("div");
+        div.style.display = "flex";
+        div.style.gap = "5px";
+        div.style.alignItems = "center";
+        this.#innerElements.container.append(div);
+
+        const soundEffectCheckbox = this.#window.document.createElement("input");
+        soundEffectCheckbox.type = "checkbox";
+        soundEffectCheckbox.id = "sfx-checkbox";
+        soundEffectCheckbox.checked = soundEnabled;
+        soundEffectCheckbox.style.transform = "scale(1.3)";
+        soundEffectCheckbox.style.accentColor = "#aaa";
+        soundEffectCheckbox.style.cursor = "pointer";
+        this.#innerElements.sfxCheckbox = soundEffectCheckbox;
+        soundEffectCheckbox.addEventListener("change", () => {
+            soundEnabled = soundEffectCheckbox.checked;
+        });
+        div.append(soundEffectCheckbox);
+        
+        const chooseSoundEffect = this.#window.document.createElement("label");
+        chooseSoundEffect.textContent = "Toggle sound effect for new numbers";
+        chooseSoundEffect.htmlFor = "sfx-checkbox";
+        chooseSoundEffect.style.cursor = "pointer";
+        div.append(chooseSoundEffect);
     }
 
     #addPatternSelection() {
@@ -762,5 +796,5 @@ function addCalledNumber(number) {
 //=============================================
 
 game = new GameObject();
-popup = new ControlsWindow(500, 550);
+popup = new ControlsWindow(500, 570);
 game.init();
