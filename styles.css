@@ -18,11 +18,34 @@
         U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
 }
 
+.openPopupBtn {
+    display: inline-block;
+    position: absolute;
+    top: 10px;
+    left: 10px;
+
+    padding: 0.5rem 1rem;
+    background-color: #d6d6d6;
+    border: none;
+    border-radius: 0.25rem;
+    cursor: pointer;
+    font-size: 1rem;
+    font-weight: 600;
+    transition: background-color 0.2s;
+    font-family: inherit;
+    z-index: 9999;
+}
+
+.openPopupBtn:hover {
+    background-color: #b9b9b9;
+}
+
 .game {
     display: grid;
     grid-template-rows: 30vh 70vh;
 }
 
+/* Top portion of screen */
 .top {
     display: grid;
     grid-template-columns: auto 5vh 30vh;
@@ -41,6 +64,25 @@
     padding-right: 10px;
 }
 
+.padding-jankiness {
+    margin-right: -18vh;
+    margin-left: 18.5vh;
+    animation: remove-padding 0.5s forwards;
+}
+
+@keyframes remove-padding {
+    0% {
+        margin-right: -18vh;
+        margin-left: 18.5vh;
+    }
+
+    100% {
+        margin-right: 0;
+        margin-left: 0.5vh;
+    }
+}
+
+/* Number circles */
 .called-numbers {
     scroll-behavior: smooth;
     position: relative;
@@ -130,11 +172,6 @@
     background-color: #5656ffaa;
 }
 
-.c-w {
-    background-color: #eeeeee;
-    color: #1d1008;
-}
-
 .small-number {
     height: 6vw;
     width: 6vw;
@@ -164,24 +201,6 @@
     transition: 0.3s;
 }
 
-.padding-jankiness {
-    margin-right: -18vh;
-    margin-left: 18.5vh;
-    animation: remove-padding 0.5s forwards;
-}
-
-@keyframes remove-padding {
-    0% {
-        margin-right: -18vh;
-        margin-left: 18.5vh;
-    }
-
-    100% {
-        margin-right: 0;
-        margin-left: 0.5vh;
-    }
-}
-
 .large-number:nth-child(1) {
     transition: 0.1s;
     transform: scale(1.4);
@@ -193,28 +212,7 @@
     font-size: 5rem;
 }
 
-.openPopupBtn {
-    display: inline-block;
-    position: absolute;
-    top: 10px;
-    left: 10px;
-
-    padding: 0.5rem 1rem;
-    background-color: #e7e7e7;
-    border: none;
-    border-radius: 0.25rem;
-    cursor: pointer;
-    font-size: 1rem;
-    font-weight: 600;
-    transition: background-color 0.2s;
-    font-family: inherit;
-    z-index: 9999;
-}
-
-.openPopupBtn:hover {
-    background-color: #d7d7d7;
-}
-
+/* Winning Pattern */
 .pattern-parent {
     position: relative;
     display: grid;
@@ -255,7 +253,7 @@
     background-color: white;
 }
 
-/* progress until next element */
+/* Progress bar */
 .progress-bar-parent {
     padding-left: 2.2rem;
     /* transform: rotateX(180deg); */
@@ -324,10 +322,6 @@
 }
 
 @media (prefers-color-scheme: dark) {
-    .progress-bar {
-        background: #444;
-    }
-
     body {
         background-color: #000000;
         color: #eeeeee;
@@ -335,11 +329,6 @@
 
     .number {
         border-color: #eeeeee;
-    }
-
-    .c-w {
-        background-color: #1d1008;
-        color: #eeeeee;
     }
 
     .c-r {
@@ -357,6 +346,10 @@
 
     .openPopupBtn:hover {
         background-color: #3a3a3a;
+    }
+
+    .progress-bar {
+        background: #444;
     }
 
     .pattern-square {
