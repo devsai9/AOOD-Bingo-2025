@@ -173,8 +173,8 @@ class GameObject {
         if (this.#gameIsActive) {
             this.stop();
             this.#gameLoop = setInterval(obj.tick.bind(obj), obj.#intervalSeconds * 1000);
+            startUpdateProgressLoop(this.#intervalSeconds * 1000);
         }
-        startUpdateProgressLoop(this.#intervalSeconds * 1000);
     }
 
     stop() {
