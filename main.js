@@ -481,9 +481,9 @@ class ControlsWindow {
 
         speedLabel.type = "number";
         speedLabel.value = 6;
-        speedLabel.min = 0.1;
+        speedLabel.min = 5;
         speedLabel.max = 30;
-        speedLabel.step = 0.1;
+        speedLabel.step = 1;
         speedLabel.classList.add("speed-label");
         this.#innerElements.speedSlider = speedInput;
         this.#innerElements.container.append(speedLabel);
