@@ -375,6 +375,7 @@ class ControlsWindow {
         plusButton.textContent = "+";
         plusButton.classList.add("plus-button");
         plusButton.onclick = () => {
+            this.#window.document.querySelector('.delete-button-0').disabled = false;
             const val = parseInt(patternPreset.value);
             if (val == -1) {
                 winningPatterns.push(Array(25).fill(0));
@@ -413,12 +414,14 @@ class ControlsWindow {
 
         const deleteButton = this.#window.document.createElement("button");
         deleteButton.innerHTML = "&times;";
-        deleteButton.classList.add("delete-button");
+        deleteButton.classList.add("delete-button", `delete-button-${frameNum}`);
+        deleteButton.disabled = winningPatterns.length <= 1;
         deleteButton.onclick = () => {
             winningPatterns.splice(frameNum, 1);
 
             if (frameNum === this.#innerElements.checkBoxContainer.children.length - 1) {
                 selectPatternParent.remove();
+                if (winningPatterns.length === 1) this.#window.document.querySelector('.delete-button-0').disabled = true;
                 return;
             }
 
