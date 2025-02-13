@@ -165,7 +165,7 @@ class GameObject {
         this.reloadGameLoop();
     }
 
-    setIntervalSeconds(secs) { 
+    setIntervalSeconds(secs) {
         this.#intervalSeconds = secs;
     }
 
@@ -209,7 +209,7 @@ class GameObject {
         this.#current++;
         startUpdateProgressLoop(this.#intervalSeconds * 1000);
     }
- 
+
     togglePause() {
         popup.getPauseButton().textContent = this.#paused ? "Pause" : "Unpause";
         this.#paused = !this.#paused;
@@ -266,7 +266,7 @@ class ControlsWindow {
         this.#config.height = height;
         this.#config.left = (screen.width / 2) - (width / 2);
         this.#config.top = (screen.height / 2) - (height / 2);
-        
+
         this.#window = null;
     }
 
@@ -303,7 +303,7 @@ class ControlsWindow {
             .forEach((input) => {
                 input.disabled = config.gameActive;
             });
-        
+
         this.#innerElements.speedSlider.value = config.intervalSeconds;
         this.#innerElements.speedSliderLabel.value = config.intervalSeconds;
 
@@ -377,7 +377,7 @@ class ControlsWindow {
             soundEnabled = soundEffectCheckbox.checked;
         });
         div.append(soundEffectCheckbox);
-        
+
         const chooseSoundEffect = this.#window.document.createElement("label");
         chooseSoundEffect.textContent = "Toggle sound effect for new numbers";
         chooseSoundEffect.htmlFor = "sfx-checkbox";
@@ -460,13 +460,13 @@ class ControlsWindow {
             }
 
             this.#window.document.querySelectorAll('.pattern-checkboxes').forEach((el) => el.remove());
-            
+
             for (let i = 0; i < winningPatterns.length; i++) {
                 this.#addPatternCheckboxes(i);
             }
         };
         selectPatternParent.append(deleteButton);
-        
+
         for (let i = 0; i < 25; i++) {
             let newLabel = this.#window.document.createElement("label");
             newLabel.classList.add("pattern-label", `pattern-label-${frameNum}`);
@@ -477,6 +477,9 @@ class ControlsWindow {
             newCheckbox.id = `pattern-checkbox-${frameNum}-${i}`;
             newCheckbox.classList.add("pattern-checkbox", `pattern-checkbox-${frameNum}`);
             newCheckbox.checked = winningPatterns[frameNum][i];
+            newCheckbox.addEventListener('change', () => {
+                this.getWinningPatterns();
+            });
             if (i % 5 === 0) {
                 selectPatternParent.append(this.#window.document.createElement("br"));
             }
@@ -525,17 +528,17 @@ class ControlsWindow {
         speedInput.addEventListener("input", () => {
             speedLabel.value = speedInput.value;
         });
-    
+
         speedInput.addEventListener("change", () => {
             game.setIntervalSeconds(parseFloat(speedInput.value));
             game.reloadGameLoop();
         });
-    
+
         speedLabel.addEventListener("change", () => {
             if (speedLabel.value < 0.1) speedLabel.value = 0.1;
             if (speedLabel.value > 30) speedLabel.value = 30;
             speedInput.value = speedLabel.value;
-    
+
             game.setIntervalSeconds(parseFloat(speedLabel.value));
             game.reloadGameLoop();
         });
@@ -555,7 +558,7 @@ class ControlsWindow {
     #addStartGameButton() {
         const startGameButton = this.#window.document.createElement("button");
         startGameButton.classList.add("action-btn");
-        startGameButton.textContent = "Start the game";
+        startGameButton.textContent = "Start Game";
 
         startGameButton.onclick = () => {
             // sets ui stuff
@@ -605,7 +608,7 @@ class ControlsWindow {
     #addAgainButton() {
         const againButton = this.#window.document.createElement("button");
         againButton.classList.add("action-btn");
-        againButton.textContent = "Play again";
+        againButton.textContent = "New Game";
         againButton.disabled = true;
 
         againButton.onclick = () => {
@@ -672,7 +675,7 @@ class ControlsWindow {
 
     getWinningPatterns() {
         const frames = [];
-    
+
         for (let i = 0; i < winningPatterns.length; i++) {
             frames.push([]);
             const checkboxes = this.#window.document.querySelectorAll(`.pattern-checkbox-${i}`);
@@ -680,7 +683,7 @@ class ControlsWindow {
                 frames[i].push(checkbox.checked ? 1 : 0);
             });
         }
-    
+
         winningPatterns = frames;
         return frames;
     }
