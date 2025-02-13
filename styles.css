@@ -361,3 +361,7 @@
         color: white;
     }
 }
+
+.progress-bar, .winning-pattern-label {
+    display: none;
+}

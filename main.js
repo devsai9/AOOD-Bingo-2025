@@ -153,6 +153,9 @@ class GameObject {
         this.#current = 0;
         generateNumberElements();
         this.#initOnce = true;
+
+        document.querySelector(".progress-bar").style.display = "none";
+        document.querySelector(".winning-pattern-label").style.display = "none";
     }
 
     startGame() {
@@ -163,6 +166,9 @@ class GameObject {
         startDisplayPatternLoop();
         startUpdateProgressLoop(this.#intervalSeconds * 1000);
         this.reloadGameLoop();
+
+        document.querySelector(".progress-bar").style.display = "block";
+        document.querySelector(".winning-pattern-label").style.display = "block";
     }
 
     setIntervalSeconds(secs) {
@@ -336,6 +342,7 @@ class ControlsWindow {
         for (let i = 0; i < winningPatterns.length; i++) {
             this.#addPatternCheckboxes(i);
         }
+        this.#addCredits();
         this.#addCSS();
     }
 
@@ -650,6 +657,14 @@ class ControlsWindow {
         banner.innerHTML = "<p>Game has been reset</p>";
         this.#innerElements.banner = banner;
         this.#innerElements.container.append(banner);
+    }
+
+    #addCredits() {
+        this.#addLineBreak();
+        this.#addLineBreak();
+        const credits = this.#window.document.createElement("p");
+        credits.innerHTML = "Created by: <a href='https://github.com/devsai9' target='_blank'>Sai Siddhish Chandra Sekaran</a>, <a href='https://hnasheralneam.dev/' target='_blank'>Hamza Nasher-Alneam</a>, and <a href='https://github.com/grekand46' target='_blank'>Kai Luo</a>"
+        this.#innerElements.container.append(credits);
     }
 
     #addCSS() {
