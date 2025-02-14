@@ -126,6 +126,13 @@ input[type="number"]:disabled {
     filter: brightness(0.85);
 }
 
+.pattern-add-container {
+    display: inline-flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 10px;
+}
+
 .plus-button {
     padding: 0.5rem 1rem;
     background-color: #e7e7e7;
@@ -136,7 +143,7 @@ input[type="number"]:disabled {
     font-size: 1rem;
     font-weight: 600;
     margin-left: 10px;
-    margin-top: 10px;
+    /* margin-top: 10px; */
 }
 
 .plus-button:disabled {

@@ -105,6 +105,59 @@ let winningPatternPresets = [
             1, 1, 1, 1, 1,
         ]
     ],
+    [
+        // Letter "C"
+        [
+            1, 1, 1, 1, 1,
+            1, 0, 0, 0, 0,
+            1, 0, 0, 0, 0,
+            1, 0, 0, 0, 0,
+            1, 1, 1, 1, 1,
+        ]
+    ],
+    [
+        // Letter "H"
+        [
+            1, 0, 0, 0, 1,
+            1, 0, 0, 0, 1,
+            1, 1, 1, 1, 1,
+            1, 0, 0, 0, 1,
+            1, 0, 0, 0, 1,
+        ]
+    ],
+    [
+
+        // Letter "S"
+        [
+            1, 1, 1, 1, 1,
+            1, 0, 0, 0, 0,
+            1, 1, 1, 1, 1,
+            0, 0, 0, 0, 1,
+            1, 1, 1, 1, 1,
+        ]
+    ],
+    [
+
+        // Letter "Z"
+        [
+            1, 1, 1, 1, 1,
+            0, 0, 0, 1, 0,
+            0, 0, 1, 0, 0,
+            0, 1, 0, 0, 0,
+            1, 1, 1, 1, 1,
+        ]
+    ],
+    [
+
+        // Diamond
+        [
+            0, 0, 1, 0, 0,
+            0, 1, 0, 1, 0,
+            1, 0, 0, 0, 1,
+            0, 1, 0, 1, 0,
+            0, 0, 1, 0, 0,
+        ]
+    ],
 ];
 
 //=============================================
@@ -405,13 +458,22 @@ class ControlsWindow {
         <option value="0">Regular (5 in a line)</option>
         <option value="1">Four Corners</option>
         <option value="2">Blackout</option>
-        <option value="3">Letter "X"</option>
         <option value="4">Around the World (Square)</option>
+        <option value="10">Diamond</option>
+        <option value="6">Letter "C"</option>
+        <option value="7">Letter "H"</option>
+        <option value="8">Letter "S"</option>
         <option value="5">Letter "I"</option>
+        <option value="3">Letter "X"</option>
+        <option value="9">Letter "Z"</option>
         `;
         patternPreset.value = "0";
         this.#innerElements.presetDropdown = patternPreset;
         this.#innerElements.container.append(patternPreset);
+
+        const plusCont = this.#window.document.createElement("div");
+        plusCont.classList.add("pattern-add-container");
+        this.#innerElements.container.append(plusCont);
 
         const plusButton = this.#window.document.createElement("button");
         plusButton.textContent = "+";
@@ -431,8 +493,18 @@ class ControlsWindow {
             }
         }
         plusButton.setAttribute("title", "Add the selected pattern to the list");
-        this.#innerElements.container.append(plusButton);
+        plusCont.append(plusButton);
         this.#innerElements.plusButton = plusButton;
+
+        const span = this.#window.document.createElement("span");
+        span.title = "Select the desired pattern from the dropdown and click the plus button to add the pattern.";
+        span.style.cursor = "help";
+        span.innerHTML = `
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-question-circle-fill" viewBox="0 0 16 16">
+            <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0M5.496 6.033h.825c.138 0 .248-.113.266-.25.09-.656.54-1.134 1.342-1.134.686 0 1.314.343 1.314 1.168 0 .635-.374.927-.965 1.371-.673.489-1.206 1.06-1.168 1.987l.003.217a.25.25 0 0 0 .25.246h.811a.25.25 0 0 0 .25-.25v-.105c0-.718.273-.927 1.01-1.486.609-.463 1.244-.977 1.244-2.056 0-1.511-1.276-2.241-2.673-2.241-1.267 0-2.655.59-2.75 2.286a.237.237 0 0 0 .241.247m2.325 6.443c.61 0 1.029-.394 1.029-.927 0-.552-.42-.94-1.029-.94-.584 0-1.009.388-1.009.94 0 .533.425.927 1.01.927z"/>
+        </svg>
+        `;
+        plusCont.append(span);
 
         const patternCheckboxContainer = this.#window.document.createElement("div");
         patternCheckboxContainer.classList.add("pattern-checkbox-container");
@@ -664,7 +736,7 @@ class ControlsWindow {
         this.#addLineBreak();
         this.#addLineBreak();
         const credits = this.#window.document.createElement("p");
-        credits.innerHTML = "Created by: <a href='https://github.com/devsai9' target='_blank'>Sai Siddhish Chandra Sekaran</a>, <a href='https://hnasheralneam.dev/' target='_blank'>Hamza Nasher-Alneam</a>, and <a href='https://github.com/grekand46' target='_blank'>Kai Luo</a>"
+        credits.innerHTML = "Created by: <a href='https://github.com/devsai9' target='_blank'>Sai Siddhish Chandra Sekaran</a>, <a href='https://hnasheralneam.dev/' target='_blank'>Hamza Nasher-Alneam</a>, and <a href='https://github.com/grekand46' target='_blank'>Kai Luo</a> for the Advanced Object-Oriented Design G/T Class";
         this.#innerElements.container.append(credits);
     }
 
