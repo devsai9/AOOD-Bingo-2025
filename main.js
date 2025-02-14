@@ -382,11 +382,12 @@ class ControlsWindow {
         this.#innerElements.sfxCheckbox = soundEffectCheckbox;
         soundEffectCheckbox.addEventListener("change", () => {
             soundEnabled = soundEffectCheckbox.checked;
+            chooseSoundEffect.textContent = `Toggle sound effect for new  (${(soundEnabled ? "ON" : "OFF")})`;
         });
         div.append(soundEffectCheckbox);
 
         const chooseSoundEffect = this.#window.document.createElement("label");
-        chooseSoundEffect.textContent = "Toggle sound effect for new numbers";
+        chooseSoundEffect.textContent = `Toggle sound effect for new  (${(soundEnabled ? "ON" : "OFF")})`;
         chooseSoundEffect.htmlFor = "sfx-checkbox";
         chooseSoundEffect.style.cursor = "pointer";
         div.append(chooseSoundEffect);
